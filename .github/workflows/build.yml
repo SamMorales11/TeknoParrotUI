@@ -16,16 +16,21 @@ jobs:
       with:
         dotnet-version: '6.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore TeknoParrotUI.sln
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
 
-    - name: Build
-      run: dotnet build TeknoParrotUI.sln --configuration Release --no-restore
+    - name: Restore NuGet packages
+      run: |
+        nuget restore TeknoParrotUI.sln
+        dotnet restore TeknoParrotUI.sln
+
+    - name: Build solution
+      run: msbuild TeknoParrotUI.sln /p:Configuration=Release /p:Platform="Any CPU" /m
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: TeknoParrotUI-Build
         path: |
-          TeknoParrotUi/bin/Release/**
-          TeknoParrotUi.Common/bin/Release/**
+          **/bin/Release/**
+          **/bin/x64/Release/**
