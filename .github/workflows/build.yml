@@ -1,0 +1,31 @@
+name: Build TeknoParrotUI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore TeknoParrotUI.sln
+
+    - name: Build
+      run: dotnet build TeknoParrotUI.sln --configuration Release --no-restore
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: TeknoParrotUI-Build
+        path: |
+          TeknoParrotUi/bin/Release/**
+          TeknoParrotUi.Common/bin/Release/**
