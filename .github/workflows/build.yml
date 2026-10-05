@@ -27,7 +27,8 @@ jobs:
     - name: Build solution
       run: msbuild TeknoParrotUI.sln /p:Configuration=Release /m
 
-    - name: List files (untuk debug)
+    - name: List files (debug)
+      shell: cmd
       run: |
         dir /s /b *.exe
         dir /s /b *.dll
