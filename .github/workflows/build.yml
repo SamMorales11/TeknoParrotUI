@@ -27,19 +27,19 @@ jobs:
     - name: Build solution
       run: msbuild TeknoParrotUI.sln /p:Configuration=Release /m
 
-    - name: List files (debug)
+    - name: Find and copy all output files
       shell: cmd
       run: |
-        dir /s /b *.exe
-        dir /s /b *.dll
+        mkdir full_build
+        xcopy /E /I /Y TeknoParrotUi\bin\Release\* full_build\ 2>nul
+        xcopy /E /I /Y TeknoParrotUi\bin\x64\Release\* full_build\ 2>nul
+        xcopy /E /I /Y TeknoParrotUi.Common\bin\Release\* full_build\ 2>nul
+        xcopy /E /I /Y TeknoParrotUi.Common\bin\x64\Release\* full_build\ 2>nul
+        dir /s /b full_build
 
-    - name: Upload artifact
+    - name: Upload full artifact
       uses: actions/upload-artifact@v4
       with:
-        name: TeknoParrotUI-Build
-        path: |
-          **/*.exe
-          **/*.dll
-          **/*.json
-          **/*.config
-        if-no-files-found: warn
+        name: TeknoParrotUI-Full-Build
+        path: full_build/
+        if-no-files-found: error
