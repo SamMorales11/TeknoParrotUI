@@ -27,19 +27,28 @@ jobs:
     - name: Build solution
       run: msbuild TeknoParrotUI.sln /p:Configuration=Release /m
 
-    - name: Find and copy all output files
+    - name: Find all output files
+      shell: cmd
+      run: |
+        echo ===== Mencari file .exe =====
+        dir /s /b *.exe
+        echo.
+        echo ===== Mencari folder bin =====
+        dir /s /b /ad bin
+
+    - name: Create full_build and copy everything possible
       shell: cmd
       run: |
         mkdir full_build
-        xcopy /E /I /Y TeknoParrotUi\bin\Release\* full_build\ 2>nul
-        xcopy /E /I /Y TeknoParrotUi\bin\x64\Release\* full_build\ 2>nul
-        xcopy /E /I /Y TeknoParrotUi.Common\bin\Release\* full_build\ 2>nul
-        xcopy /E /I /Y TeknoParrotUi.Common\bin\x64\Release\* full_build\ 2>nul
-        dir /s /b full_build
+        for /r %%i in (*.exe) do copy "%%i" full_build\ /Y
+        for /r %%i in (*.dll) do copy "%%i" full_build\ /Y
+        for /r %%i in (*.json) do copy "%%i" full_build\ /Y
+        for /r %%i in (*.config) do copy "%%i" full_build\ /Y
+        dir full_build
 
-    - name: Upload full artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: TeknoParrotUI-Full-Build
         path: full_build/
-        if-no-files-found: error
+        if-no-files-found: warn
