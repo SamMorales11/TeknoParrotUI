@@ -31,7 +31,7 @@ jobs:
       shell: cmd
       run: |
         mkdir full_build
-        xcopy /E /I /Y "TeknoParrotUi\bin\x86\Release\*" full_build\
+        xcopy /E /I /Y "TeknoParrotUI\bin\x86\Release\*" full_build\
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
