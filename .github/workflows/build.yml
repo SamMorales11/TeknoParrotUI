@@ -27,11 +27,20 @@ jobs:
     - name: Build solution
       run: msbuild TeknoParrotUI.sln /p:Configuration=Release /m
 
-    - name: Copy full build output
-      shell: cmd
+    - name: Find correct Release folder and copy
+      shell: pwsh
       run: |
-        mkdir full_build
-        xcopy /E /I /Y "TeknoParrotUI\bin\x86\Release\*" full_build\
+        $releaseFolder = Get-ChildItem -Path . -Recurse -Directory | Where-Object { $_.FullName -match 'bin\\x86\\Release$' } | Select-Object -First 1
+        if ($releaseFolder) {
+          Write-Host "Found Release folder at: $($releaseFolder.FullName)"
+          New-Item -ItemType Directory -Force -Path full_build
+          Copy-Item -Path "$($releaseFolder.FullName)\*" -Destination full_build -Recurse -Force
+          Write-Host "Files copied successfully"
+          Get-ChildItem full_build
+        } else {
+          Write-Host "Release folder not found!"
+          exit 1
+        }
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
